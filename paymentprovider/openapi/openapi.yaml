@@ -76,7 +76,7 @@ paths:
           description: OK
         "404":
           description: Not Found
-      summary: Your GET endpoint
+      summary: getPaymentDetails
       tags: []
       x-openapi-router-controller: paymentprovider.controllers.default_controller
 components:
