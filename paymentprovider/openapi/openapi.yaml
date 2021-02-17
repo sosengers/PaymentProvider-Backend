@@ -1,0 +1,115 @@
+openapi: 3.0.0
+info:
+  description: Interface that models the operations available for the Payment Provider
+    that supports payments by customers in ACMESky.
+  title: Payment Provider
+  version: "1.0"
+servers:
+- url: http://localhost:3000
+paths:
+  /payments/pay:
+    post:
+      description: |-
+        Sends the payment data for paying a request.
+        API for: User
+      operationId: send_payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentData'
+      responses:
+        "200":
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad Request
+      summary: sendPayment
+      x-openapi-router-controller: paymentprovider.controllers.default_controller
+  /payments/request:
+    post:
+      description: |-
+        Creates a payment request for a user.
+        API for: ACMESky
+      operationId: create_payment_request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+      summary: createPaymentRequest
+      x-openapi-router-controller: paymentprovider.controllers.default_controller
+components:
+  schemas:
+    PaymentRequest:
+      example:
+        transaction_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        amount: 0.08008281904610115
+        description: description
+        payment_receiver: payment_receiver
+      properties:
+        amount:
+          format: double
+          minimum: 0
+          type: number
+        description:
+          type: string
+        payment_receiver:
+          type: string
+        transaction_id:
+          format: uuid
+          type: string
+      required:
+      - amount
+      - description
+      - payment_receiver
+      - transaction_id
+      title: PaymentRequest
+      type: object
+    PaymentData:
+      example:
+        transaction_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        credit_cart_number: credit_cart_number
+        cvv: cvv
+        owner_name: owner_name
+        expiration_date: 2000-01-23
+      properties:
+        transaction_id:
+          format: uuid
+          type: string
+        credit_cart_number:
+          pattern: '[0-9]{16,16}'
+          type: string
+        cvv:
+          pattern: '[0-9]{3,3}'
+          type: string
+        expiration_date:
+          format: date
+          type: string
+        owner_name:
+          type: string
+      required:
+      - credit_cart_number
+      - cvv
+      - expiration_date
+      - owner_name
+      - transaction_id
+      title: PaymentData
+      type: object
+    Error:
+      properties:
+        description:
+          minLength: 1
+          type: string
+      required:
+      - description
+      title: Error
+      type: object
