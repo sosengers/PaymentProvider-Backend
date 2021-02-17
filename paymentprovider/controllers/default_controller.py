@@ -23,6 +23,19 @@ def create_payment_request(payment_request=None):  # noqa: E501
     return 'do some magic!'
 
 
+def get_payment_details(transaction_id):  # noqa: E501
+    """Your GET endpoint
+
+    Gets the information for the payment request for a user. API for: User # noqa: E501
+
+    :param transaction_id: ID of transaction
+    :type transaction_id: 
+
+    :rtype: PaymentRequest
+    """
+    return 'do some magic!'
+
+
 def send_payment(payment_data=None):  # noqa: E501
     """sendPayment
 

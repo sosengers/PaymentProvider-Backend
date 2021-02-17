@@ -15,7 +15,7 @@ class PaymentRequest(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, amount=None, description=None, payment_receiver=None, transaction_id=None):  # noqa: E501
+    def __init__(self, amount=None, description=None, payment_receiver=None):  # noqa: E501
         """PaymentRequest - a model defined in OpenAPI
 
         :param amount: The amount of this PaymentRequest.  # noqa: E501
@@ -24,27 +24,22 @@ class PaymentRequest(Model):
         :type description: str
         :param payment_receiver: The payment_receiver of this PaymentRequest.  # noqa: E501
         :type payment_receiver: str
-        :param transaction_id: The transaction_id of this PaymentRequest.  # noqa: E501
-        :type transaction_id: str
         """
         self.openapi_types = {
             'amount': float,
             'description': str,
-            'payment_receiver': str,
-            'transaction_id': str
+            'payment_receiver': str
         }
 
         self.attribute_map = {
             'amount': 'amount',
             'description': 'description',
-            'payment_receiver': 'payment_receiver',
-            'transaction_id': 'transaction_id'
+            'payment_receiver': 'payment_receiver'
         }
 
         self._amount = amount
         self._description = description
         self._payment_receiver = payment_receiver
-        self._transaction_id = transaction_id
 
     @classmethod
     def from_dict(cls, dikt) -> 'PaymentRequest':
@@ -127,26 +122,3 @@ class PaymentRequest(Model):
             raise ValueError("Invalid value for `payment_receiver`, must not be `None`")  # noqa: E501
 
         self._payment_receiver = payment_receiver
-
-    @property
-    def transaction_id(self):
-        """Gets the transaction_id of this PaymentRequest.
-
-
-        :return: The transaction_id of this PaymentRequest.
-        :rtype: str
-        """
-        return self._transaction_id
-
-    @transaction_id.setter
-    def transaction_id(self, transaction_id):
-        """Sets the transaction_id of this PaymentRequest.
-
-
-        :param transaction_id: The transaction_id of this PaymentRequest.
-        :type transaction_id: str
-        """
-        if transaction_id is None:
-            raise ValueError("Invalid value for `transaction_id`, must not be `None`")  # noqa: E501
-
-        self._transaction_id = transaction_id

@@ -42,16 +42,47 @@ paths:
               $ref: '#/components/schemas/PaymentRequest'
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentCreationResponse'
           description: OK
         "400":
           description: Bad Request
       summary: createPaymentRequest
       x-openapi-router-controller: paymentprovider.controllers.default_controller
+  /payments/{transaction_id}:
+    get:
+      description: |-
+        Gets the information for the payment request for a user.
+        API for: User
+      operationId: get_payment_details
+      parameters:
+      - description: ID of transaction
+        explode: false
+        in: path
+        name: transaction_id
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRequest'
+          description: OK
+        "404":
+          description: Not Found
+      summary: Your GET endpoint
+      tags: []
+      x-openapi-router-controller: paymentprovider.controllers.default_controller
 components:
   schemas:
     PaymentRequest:
       example:
-        transaction_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         amount: 0.08008281904610115
         description: description
         payment_receiver: payment_receiver
@@ -64,14 +95,10 @@ components:
           type: string
         payment_receiver:
           type: string
-        transaction_id:
-          format: uuid
-          type: string
       required:
       - amount
       - description
       - payment_receiver
-      - transaction_id
       title: PaymentRequest
       type: object
     PaymentData:
@@ -112,4 +139,20 @@ components:
       required:
       - description
       title: Error
+      type: object
+    PaymentCreationResponse:
+      example:
+        transaction_id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        redirect_page: redirect_page
+      properties:
+        redirect_page:
+          minLength: 1
+          type: string
+        transaction_id:
+          format: uuid
+          type: string
+      required:
+      - redirect_page
+      - transaction_id
+      title: PaymentCreationResponse
       type: object

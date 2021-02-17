@@ -15,21 +15,26 @@ class PaymentCreationResponse(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, redirect_page=None):  # noqa: E501
+    def __init__(self, redirect_page=None, transaction_id=None):  # noqa: E501
         """PaymentCreationResponse - a model defined in OpenAPI
 
         :param redirect_page: The redirect_page of this PaymentCreationResponse.  # noqa: E501
         :type redirect_page: str
+        :param transaction_id: The transaction_id of this PaymentCreationResponse.  # noqa: E501
+        :type transaction_id: str
         """
         self.openapi_types = {
-            'redirect_page': str
+            'redirect_page': str,
+            'transaction_id': str
         }
 
         self.attribute_map = {
-            'redirect_page': 'redirect_page'
+            'redirect_page': 'redirect_page',
+            'transaction_id': 'transaction_id'
         }
 
         self._redirect_page = redirect_page
+        self._transaction_id = transaction_id
 
     @classmethod
     def from_dict(cls, dikt) -> 'PaymentCreationResponse':
@@ -66,3 +71,26 @@ class PaymentCreationResponse(Model):
             raise ValueError("Invalid value for `redirect_page`, length must be greater than or equal to `1`")  # noqa: E501
 
         self._redirect_page = redirect_page
+
+    @property
+    def transaction_id(self):
+        """Gets the transaction_id of this PaymentCreationResponse.
+
+
+        :return: The transaction_id of this PaymentCreationResponse.
+        :rtype: str
+        """
+        return self._transaction_id
+
+    @transaction_id.setter
+    def transaction_id(self, transaction_id):
+        """Sets the transaction_id of this PaymentCreationResponse.
+
+
+        :param transaction_id: The transaction_id of this PaymentCreationResponse.
+        :type transaction_id: str
+        """
+        if transaction_id is None:
+            raise ValueError("Invalid value for `transaction_id`, must not be `None`")  # noqa: E501
+
+        self._transaction_id = transaction_id
