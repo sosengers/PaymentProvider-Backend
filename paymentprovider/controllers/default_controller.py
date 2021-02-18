@@ -6,7 +6,11 @@ from paymentprovider.models.payment_creation_response import PaymentCreationResp
 from paymentprovider.models.payment_data import PaymentData  # noqa: E501
 from paymentprovider.models.payment_request import PaymentRequest  # noqa: E501
 from paymentprovider import util
-
+from redis import Redis
+import json
+import uuid
+import time
+import logging
 
 def create_payment_request(payment_request=None):  # noqa: E501
     """createPaymentRequest
@@ -20,8 +24,14 @@ def create_payment_request(payment_request=None):  # noqa: E501
     """
     if connexion.request.is_json:
         payment_request = PaymentRequest.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
 
+    transaction_id = str(uuid.uuid1())
+    redis_connection = Redis(host="payment_provider_redis", port=6379, db=0)
+
+    redis_connection.set(transaction_id, json.dumps(payment_request.to_dict()))
+
+    redirect_page = f'http://0.0.0.0:1001/?transaction_id={transaction_id}' # The transaction id will be used to retrieve the informations saved on redis
+    return PaymentCreationResponse(redirect_page=redirect_page, transaction_id=transaction_id)
 
 def get_payment_details(transaction_id):  # noqa: E501
     """Your GET endpoint
@@ -33,7 +43,9 @@ def get_payment_details(transaction_id):  # noqa: E501
 
     :rtype: PaymentRequest
     """
-    return 'do some magic!'
+    redis_connection = Redis(host="payment_provider_redis", port=6379, db=0)
+    payment_request = json.loads(redis_connection.get(transaction_id))
+    return PaymentRequest.from_dict(payment_request)
 
 
 def send_payment(payment_data=None):  # noqa: E501
@@ -48,4 +60,15 @@ def send_payment(payment_data=None):  # noqa: E501
     """
     if connexion.request.is_json:
         payment_data = PaymentData.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+
+    # Checking payment information with the bank
+    time.sleep(2)
+    if payment_data.cvv == "456": # Errore nel pagamento (credito insufficiente)
+        status = False
+    else:
+        status = True
+    payment_information = {
+        'transaction_id': payment_data.transaction_id,
+        'status': status
+    }
+    return ("", 200) if status else ("", 400)
