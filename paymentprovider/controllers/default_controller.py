@@ -7,6 +7,7 @@ from paymentprovider.models.payment_data import PaymentData  # noqa: E501
 from paymentprovider.models.payment_request import PaymentRequest  # noqa: E501
 from paymentprovider import util
 from redis import Redis
+import requests
 import json
 import uuid
 import time
@@ -30,7 +31,7 @@ def create_payment_request(payment_request=None):  # noqa: E501
 
     redis_connection.set(transaction_id, json.dumps(payment_request.to_dict()))
 
-    redirect_page = f'http://0.0.0.0:1001/?transaction_id={transaction_id}' # The transaction id will be used to retrieve the informations saved on redis
+    redirect_page = f'http://0.0.0.0:9000/?transaction_id={transaction_id}' # The transaction id will be used to retrieve the informations saved on redis
     return PaymentCreationResponse(redirect_page=redirect_page, transaction_id=transaction_id)
 
 def get_payment_details(transaction_id):  # noqa: E501
@@ -62,13 +63,18 @@ def send_payment(payment_data=None):  # noqa: E501
         payment_data = PaymentData.from_dict(connexion.request.get_json())  # noqa: E501
 
     # Checking payment information with the bank
-    time.sleep(2)
+    time.sleep(1)
+    """
     if payment_data.cvv == "456": # Errore nel pagamento (credito insufficiente)
         status = False
     else:
         status = True
+    """
+    status = True if payment_data.cvv != "456" else False
     payment_information = {
         'transaction_id': payment_data.transaction_id,
         'status': status
     }
+
+    requests.post("http://acmesky_backend:8080/payments", json=payment_information)
     return ("", 200) if status else ("", 400)
