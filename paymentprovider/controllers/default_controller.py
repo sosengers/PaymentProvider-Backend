@@ -30,6 +30,7 @@ def create_payment_request(payment_request=None):  # noqa: E501
     redis_connection = Redis(host="payment_provider_redis", port=6379, db=0)
 
     redis_connection.set(transaction_id, json.dumps(payment_request.to_dict()))
+    redis_connection.close()
 
     redirect_page = f'http://0.0.0.0:4002/?transaction_id={transaction_id}' # The transaction id will be used to retrieve the informations saved on redis
     return PaymentCreationResponse(redirect_page=redirect_page, transaction_id=transaction_id)
@@ -44,8 +45,9 @@ def get_payment_details(transaction_id):  # noqa: E501
 
     :rtype: PaymentRequest
     """
-    redis_connection = Redis(host="payment_provider_redis", port=6379, db=0)
+processInstanceId    redis_connection = Redis(host="payment_provider_redis", port=6379, db=0)
     payment_request = json.loads(redis_connection.get(transaction_id))
+    redis_connection.close()
     return PaymentRequest.from_dict(payment_request)
 
 
