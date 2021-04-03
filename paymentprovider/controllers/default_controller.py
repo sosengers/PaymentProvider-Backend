@@ -31,7 +31,7 @@ def create_payment_request(payment_request=None):  # noqa: E501
 
     redis_connection.set(transaction_id, json.dumps(payment_request.to_dict()))
 
-    redirect_page = f'http://0.0.0.0:9000/?transaction_id={transaction_id}' # The transaction id will be used to retrieve the informations saved on redis
+    redirect_page = f'http://0.0.0.0:4002/?transaction_id={transaction_id}' # The transaction id will be used to retrieve the informations saved on redis
     return PaymentCreationResponse(redirect_page=redirect_page, transaction_id=transaction_id)
 
 def get_payment_details(transaction_id):  # noqa: E501
