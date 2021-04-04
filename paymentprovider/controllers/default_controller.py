@@ -45,7 +45,7 @@ def get_payment_details(transaction_id):  # noqa: E501
 
     :rtype: PaymentRequest
     """
-processInstanceId    redis_connection = Redis(host="payment_provider_redis", port=6379, db=0)
+    redis_connection = Redis(host="payment_provider_redis", port=6379, db=0)
     payment_request = json.loads(redis_connection.get(transaction_id))
     redis_connection.close()
     return PaymentRequest.from_dict(payment_request)
