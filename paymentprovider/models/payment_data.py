@@ -9,6 +9,8 @@ from paymentprovider.models.base_model_ import Model
 import re
 from paymentprovider import util
 
+from luhn import verify as verifyluhn
+
 import re  # noqa: E501
 
 class PaymentData(Model):
@@ -107,7 +109,7 @@ class PaymentData(Model):
         """
         if credit_cart_number is None:
             raise ValueError("Invalid value for `credit_cart_number`, must not be `None`")  # noqa: E501
-        if credit_cart_number is not None and not re.search(r'[0-9]{16,16}', credit_cart_number):  # noqa: E501
+        if credit_cart_number is not None and not re.search(r'[0-9]{16,16}', credit_cart_number) and not verifyluhn(credit_cart_number):  # noqa: E501
             raise ValueError("Invalid value for `credit_cart_number`, must be a follow pattern or equal to `/[0-9]{16,16}/`")  # noqa: E501
 
         self._credit_cart_number = credit_cart_number
