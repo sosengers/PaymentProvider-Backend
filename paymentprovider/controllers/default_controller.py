@@ -13,6 +13,8 @@ import uuid
 import time
 import logging
 from os import environ
+from luhn import verify as verifyluhn
+
 
 def create_payment_request(payment_request=None):  # noqa: E501
     """createPaymentRequest
@@ -69,13 +71,8 @@ def send_payment(payment_data=None):  # noqa: E501
 
     # Checking payment information with the bank
     time.sleep(1)
-    """
-    if payment_data.cvv == "456": # Errore nel pagamento (credito insufficiente)
-        status = False
-    else:
-        status = True
-    """
-    status = True if payment_data.cvv != "456" else False
+
+    status = True if payment_data.cvv != "456" or verifyluhn(payment_data.credit_cart_number) else False
     payment_information = {
         'transaction_id': payment_data.transaction_id,
         'status': status
