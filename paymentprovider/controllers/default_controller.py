@@ -29,16 +29,19 @@ def create_payment_request(payment_request=None):  # noqa: E501
     if connexion.request.is_json:
         payment_request = PaymentRequest.from_dict(connexion.request.get_json())  # noqa: E501
 
+    """ Generate an unique transaction id and associate the id with the payment request
+    """
     transaction_id = str(uuid.uuid1())
     redis_connection = Redis(host="payment_provider_redis", port=6379, db=0)
-
     redis_connection.set(transaction_id, json.dumps(payment_request.to_dict()))
     redis_connection.close()
 
+    """ Return the url where the user can pay
+    """
     frontend_url = environ.get("PAYMENT_PROVIDER_FRONTEND", "http://0.0.0.0:4002")
-
-    redirect_page = f'{frontend_url}/?transaction_id={transaction_id}' # The transaction id will be used to retrieve the informations saved on redis
+    redirect_page = f'{frontend_url}/?transaction_id={transaction_id}'  # The transaction id will be used to retrieve the informations saved on redis
     return PaymentCreationResponse(redirect_page=redirect_page, transaction_id=transaction_id)
+
 
 def get_payment_details(transaction_id):  # noqa: E501
     """Your GET endpoint
@@ -69,9 +72,12 @@ def send_payment(payment_data=None):  # noqa: E501
     if connexion.request.is_json:
         payment_data = PaymentData.from_dict(connexion.request.get_json())  # noqa: E501
 
-    # Checking payment information with the bank
+    # Simulate the time spent to communicate with the bank
     time.sleep(1)
 
+    """ Send the payment status to ACMESky Backend 
+        If the cvv is 456 or the credit card number is not valid the payment status will be false
+    """
     status = True if payment_data.cvv != "456" or verifyluhn(payment_data.credit_cart_number) else False
     payment_information = {
         'transaction_id': payment_data.transaction_id,
