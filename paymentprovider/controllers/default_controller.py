@@ -28,6 +28,9 @@ def create_payment_request(payment_request=None):  # noqa: E501
     """
     if connexion.request.is_json:
         payment_request = PaymentRequest.from_dict(connexion.request.get_json())  # noqa: E501
+    
+    # This line simulates a network slowdown (comment if not needed).
+    time.sleep(5)
 
     """ Generate an unique transaction id and associate the id with the payment request
     """
