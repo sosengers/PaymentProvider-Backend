@@ -16,6 +16,16 @@ from os import environ
 from luhn import verify as verifyluhn
 
 
+""" This dictionary simulates a key-value database where:
+    - the Key is the payment receiver 
+    - the Value is the URL where PaymentProvider will post the payment result
+    It could have been done on Redis but, just for the sake of simplicity, it is stored here.
+"""
+served_company = {
+    "ACMESky": "http://acmesky_backend:8080/payments",
+}
+
+
 def create_payment_request(payment_request=None):  # noqa: E501
     """createPaymentRequest
 
@@ -87,5 +97,13 @@ def send_payment(payment_data=None):  # noqa: E501
         'status': status
     }
 
-    requests.post("http://acmesky_backend:8080/payments", json=payment_information)
+    """ Retrieve the payment request data for the company name from Redis
+    """
+    redis_connection = Redis(host="payment_provider_redis", port=6379, db=0)
+    payment_request = json.loads(redis_connection.get(payment_data.transaction_id))
+    redis_connection.close()
+
+    payment_receiver_url = served_company[payment_request["payment_receiver"]]
+
+    requests.post(payment_receiver_url, json=payment_information)
     return ("", 200) if status else ("", 400)
